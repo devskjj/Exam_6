@@ -26,6 +26,7 @@ public class ServerLogic extends BasicServer {
     public ServerLogic(String host, int port, DataModel dataModel) throws IOException {
         super(host, port, dataModel);
         registerGet("/", this::calendarHandler);
+        registerGet("/calendar", this::calendarHandler);
     }
 
     private void calendarHandler(HttpExchange exchange) {
@@ -33,15 +34,44 @@ public class ServerLogic extends BasicServer {
         Map<String, String> query = Utils.parseUrlEncoded(getQueryParams(exchange), "&");
 
 
-        int year = query.get("year") != null ? Integer.parseInt(query.get("year")) : LocalDate.now().getYear();
-        int month = query.get("month") != null ? Integer.parseInt(query.get("month")) : LocalDate.now().getMonthValue();
+        String yearParam = query.get("year");
+        String monthParam = query.get("month");
+
+        int year = LocalDate.now().getYear();
+        int month = LocalDate.now().getMonthValue();
+
+        try {
+            if (yearParam != null) year = Integer.parseInt(yearParam.replaceAll("\\s", ""));
+            if (monthParam != null) month = Integer.parseInt(monthParam.replaceAll("\\s", ""));
+        } catch (NumberFormatException e) {
+            year = LocalDate.now().getYear();
+            month = LocalDate.now().getMonthValue();
+        }
 
         List<LocalDate> days = makeCalendar(year, month);
+
+        int prevMonth = month - 1;
+        int prevYear = year;
+        if (prevMonth == 0) {
+            prevMonth = 12;
+            prevYear = year - 1;
+        }
+
+        int nextMonth = month + 1;
+        int nextYear = year;
+        if (nextMonth == 13) {
+            nextMonth = 1;
+            nextYear = year + 1;
+        }
 
         map.put("year", year);
         map.put("month", month);
         map.put("days", days);
         map.put("today", LocalDate.now());
+        map.put("prevMonth", prevMonth);
+        map.put("prevYear", prevYear);
+        map.put("nextMonth", nextMonth);
+        map.put("nextYear", nextYear);
 
         renderTemplate(exchange, "index.html", map);
     }
