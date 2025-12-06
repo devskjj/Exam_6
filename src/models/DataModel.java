@@ -23,7 +23,7 @@ public class DataModel {
     public void loadData() {
         if (clients.isEmpty()) {
             try {
-                DataModel data = JsonUtil.load("data.json");
+                DataModel data = JsonUtil.load("clients.json");
                 if (data != null) {
                     clients = data.getClients();
                 }
