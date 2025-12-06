@@ -7,10 +7,8 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 import models.DataModel;
-import server.cookies.Cookie;
 import server.enums.ContentType;
 import server.enums.ResponseCodes;
-import utility.JsonUtil;
 import utility.Utils;
 
 import java.io.*;
@@ -27,8 +25,46 @@ public class ServerLogic extends BasicServer {
         registerGet("/calendar", this::calendarHandler);
 
         registerGet("/day", this::dayHandler);
+        registerPost("/day", this::editPostHandler);
         registerGet("/new", this::newHandler);
         registerPost("/new", this::newPostHandler);
+    }
+
+    private void editPostHandler(HttpExchange exchange) {
+        var formData = parsePostBody(exchange);
+        int index = Integer.parseInt(formData.get("index"));
+        List<Client> clients = dataModel.getClients();
+
+        if (index < 0 || index >= clients.size()) {
+            respond404(exchange);
+            return;
+        }
+
+        Client oldClient = clients.get(index);
+        try {
+            String date = formData.get("date");
+            LocalDate chosenDate = LocalDate.parse(date);
+
+            if (chosenDate.isBefore(LocalDate.now())) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("error", "Дата сеанса не может быть в прошлом!");
+                map.put("editClient", oldClient);
+                map.put("editIndex", index);
+                renderTemplate(exchange, "edit.html", map);
+                return;
+            }
+
+            oldClient.setTime(Integer.parseInt(formData.get("time")));
+            oldClient.setClientType(formData.get("clientType"));
+            oldClient.setSymptoms(formData.get("symptoms"));
+
+            clients.sort(Comparator.comparingInt(Client::getTime));
+            redirect303(exchange, "/day");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            respond404(exchange);
+        }
     }
 
     private void newPostHandler(HttpExchange exchange) {
