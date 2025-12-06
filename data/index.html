@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Календарь записи пациентов</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/calendar.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>Календарь записи пациентов</h1>
+
+    <div class="calendar-header">
+        <button>Назад</button>
+        <h2 id="month-name">${month} ${year}</h2>
+        <button>Вперед</button>
+    </div>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Пн</th>
+            <th>Вт</th>
+            <th>Ср</th>
+            <th>Чт</th>
+            <th>Пт</th>
+            <th>Сб</th>
+            <th>Вс</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr>
+
+            <#list days as day>
+                <td class="${(day == today)?then('today', '')}">
+                    ${day.dayOfMonth}
+                </td>
+
+                <#if day.dayOfWeek.value == 7>
+                    </tr><tr>
+                </#if>
+            </#list>
+
+        </tr>
+        </tbody>
+
+    </table>
+
+</div>
+
+</body>
+</html>

@@ -14,7 +14,10 @@ import utility.Utils;
 
 import java.io.*;
 import java.nio.file.Path;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ServerLogic extends BasicServer {
@@ -22,8 +25,37 @@ public class ServerLogic extends BasicServer {
 
     public ServerLogic(String host, int port, DataModel dataModel) throws IOException {
         super(host, port, dataModel);
+        registerGet("/", this::calendarHandler);
+    }
+
+    private void calendarHandler(HttpExchange exchange) {
+        Map<String, Object> map = new HashMap<>();
+        Map<String, String> query = Utils.parseUrlEncoded(getQueryParams(exchange), "&");
 
 
+        int year = query.get("year") != null ? Integer.parseInt(query.get("year")) : LocalDate.now().getYear();
+        int month = query.get("month") != null ? Integer.parseInt(query.get("month")) : LocalDate.now().getMonthValue();
+
+        List<LocalDate> days = makeCalendar(year, month);
+
+        map.put("year", year);
+        map.put("month", month);
+        map.put("days", days);
+        map.put("today", LocalDate.now());
+
+        renderTemplate(exchange, "index.html", map);
+    }
+
+    private List<LocalDate> makeCalendar(int year, int month) {
+        List<LocalDate> list = new ArrayList<>();
+
+        LocalDate first = LocalDate.of(year, month, 1);
+        int size = first.lengthOfMonth();
+
+        for (int i = 0; i < size ; i++) {
+            list.add(first.plusDays(i));
+        }
+        return list;
     }
 
     private Map<String, String> parsePostBody(HttpExchange exchange) {
