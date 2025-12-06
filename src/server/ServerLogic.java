@@ -27,6 +27,15 @@ public class ServerLogic extends BasicServer {
         super(host, port, dataModel);
         registerGet("/", this::calendarHandler);
         registerGet("/calendar", this::calendarHandler);
+
+        registerGet("/day", this::dayHandler);
+    }
+
+    private void dayHandler(HttpExchange exchange) {
+        Map<String, Object> map = new HashMap<>();
+        dataModel.generateClients();
+        map.put("clients", dataModel.getClients());
+        renderTemplate(exchange, "list.html", map);
     }
 
     private void calendarHandler(HttpExchange exchange) {

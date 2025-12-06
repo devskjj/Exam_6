@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>List</title>
+</head>
+<body>
+
+<div class="container">
+    <h1>Список клиентов</h1>
+
+    <table class="clients-table">
+        <thead>
+        <tr>
+            <th>Время</th>
+            <th>Имя</th>
+            <th>Фамилия</th>
+            <th>Отчество</th>
+            <th>Дата рождения</th>
+            <th>Тип пациента</th>
+            <th>Симптомы</th>
+        </tr>
+
+        <#list clients as client>
+        <tr>
+            <td>${client.time}</td>
+            <td>${client.firstName}</td>
+            <td>${client.lastName}</td>
+            <td>${client.surName}</td>
+            <td>${client.birthDate}</td>
+            <td>${client.clientType}</td>
+            <td>${client.symptoms}</td>
+        </tr>
+        </#list>
+        </thead>
+        <tbody>
+    </tbody>
+    </table>
+</div>
+</body>
+</html>
+
+
+</body>
+</html>
