@@ -49,4 +49,16 @@ public class Client {
     public int getTime() {
         return time;
     }
+
+    public void setClientType(String clientType) {
+        this.clientType = clientType;
+    }
+
+    public void setSymptoms(String symptoms) {
+        this.symptoms = symptoms;
+    }
+
+    public void setTime(int time) {
+        this.time = time;
+    }
 }
