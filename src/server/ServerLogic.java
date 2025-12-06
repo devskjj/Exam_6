@@ -33,10 +33,21 @@ public class ServerLogic extends BasicServer {
 
     private void dayHandler(HttpExchange exchange) {
         Map<String, Object> map = new HashMap<>();
+
+         var query = Utils.parseUrlEncoded(getQueryParams(exchange), "&");
+        String action = query.get("action");
+
+        if ("delete".equals(action)) {
+            dataModel.removeRandomClient();
+            redirect303(exchange, "/day");
+            return;
+        }
+
         dataModel.generateClients();
         map.put("clients", dataModel.getClients());
         renderTemplate(exchange, "list.html", map);
     }
+
 
     private void calendarHandler(HttpExchange exchange) {
         Map<String, Object> map = new HashMap<>();

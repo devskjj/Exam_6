@@ -7,6 +7,7 @@ import utility.MyGenerator;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Random;
 
 public class DataModel {
 
@@ -20,6 +21,14 @@ public class DataModel {
             }
             clients.sort(Comparator.comparing(Client::getTime));
         }
+    }
+
+    public Client removeRandomClient() {
+        Random rnd = new Random();
+
+        if (clients.isEmpty()) return null;
+        int index = rnd.nextInt(clients.size());
+        return clients.remove(index);
     }
 
     public List<Client> getClients() {
