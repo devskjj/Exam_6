@@ -35,6 +35,12 @@
             <td>${client.birthDate}</td>
             <td>${client.clientType}</td>
             <td>${client.symptoms}</td>
+            <td>
+                <form action="/day" method="get" style="display:inline;">
+                    <input type="hidden" name="editIndex" value="${client?index}">
+                    <button type="submit">Редактировать</button>
+                </form>
+            </td>
         </tr>
         </#list>
         </thead>

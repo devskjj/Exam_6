@@ -83,6 +83,18 @@ public class ServerLogic extends BasicServer {
 
         var query = Utils.parseUrlEncoded(getQueryParams(exchange), "&");
         String action = query.get("action");
+        String editIndex = query.get("editIndex");
+
+        if (editIndex != null) {
+            int index = Integer.parseInt(editIndex);
+            if (index >= 0 && index < dataModel.getClients().size()) {
+                Client client = dataModel.getClients().get(index);
+                map.put("editClient", client);
+                map.put("editIndex", index);
+                renderTemplate(exchange, "edit.html", map);
+                return;
+            }
+        }
 
         if ("delete".equals(action)) {
             dataModel.removeRandomClient();

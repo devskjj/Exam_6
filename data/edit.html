@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Edit</title>
+</head>
+<body>
+
+<form action="/day" method="post">
+    <input type="hidden" name="index" value="${editIndex}">
+
+    <div>
+        <label>Время приема:</label>
+        <input type="number" name="time" value="${editClient.time}" min="8" max="17" required>
+    </div>
+
+    <div>
+        <label>Дата приема:</label>
+        <input type="date" name="date" value="date" required>
+    </div>
+
+    <div>
+        <label>Тип пациента:</label>
+        <input type="text" name="clientType" value="${editClient.clientType}" required>
+    </div>
+
+    <div>
+        <label>Симптомы:</label>
+        <input type="text" name="symptoms" value="${editClient.symptoms}">
+    </div>
+
+    <div style="margin-top: 15px;">
+        <button type="submit">Сохранить изменения</button>
+    </div>
+</form>
+
+
+</body>
+</html>
