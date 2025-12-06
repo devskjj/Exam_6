@@ -34,11 +34,17 @@ public class ServerLogic extends BasicServer {
     private void dayHandler(HttpExchange exchange) {
         Map<String, Object> map = new HashMap<>();
 
-         var query = Utils.parseUrlEncoded(getQueryParams(exchange), "&");
+        var query = Utils.parseUrlEncoded(getQueryParams(exchange), "&");
         String action = query.get("action");
 
         if ("delete".equals(action)) {
             dataModel.removeRandomClient();
+            redirect303(exchange, "/day");
+            return;
+        }
+
+        if ("add".equals(action)) {
+            dataModel.addRandomClient();
             redirect303(exchange, "/day");
             return;
         }
@@ -102,7 +108,7 @@ public class ServerLogic extends BasicServer {
         LocalDate first = LocalDate.of(year, month, 1);
         int size = first.lengthOfMonth();
 
-        for (int i = 0; i < size ; i++) {
+        for (int i = 0; i < size; i++) {
             list.add(first.plusDays(i));
         }
         return list;
