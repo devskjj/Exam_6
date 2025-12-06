@@ -1,7 +1,5 @@
 package entities;
 
-import java.time.LocalDateTime;
-
 public class Client {
 
     private String firstName;

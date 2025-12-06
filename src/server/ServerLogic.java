@@ -9,6 +9,7 @@ import freemarker.template.TemplateExceptionHandler;
 import models.DataModel;
 import server.enums.ContentType;
 import server.enums.ResponseCodes;
+import utility.JsonUtil;
 import utility.Utils;
 
 import java.io.*;
@@ -59,6 +60,11 @@ public class ServerLogic extends BasicServer {
             oldClient.setSymptoms(formData.get("symptoms"));
 
             clients.sort(Comparator.comparingInt(Client::getTime));
+            try {
+                JsonUtil.save("clients.json", dataModel);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             redirect303(exchange, "/day");
 
         } catch (Exception e) {
@@ -105,6 +111,11 @@ public class ServerLogic extends BasicServer {
         ));
 
         dataModel.getClients().sort(Comparator.comparingInt(Client::getTime));
+        try {
+            JsonUtil.save("clients.json", dataModel);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         redirect303(exchange, "/new");
     }
 
@@ -135,12 +146,22 @@ public class ServerLogic extends BasicServer {
         if ("delete".equals(action)) {
             dataModel.removeRandomClient();
             redirect303(exchange, "/day");
+            try {
+                JsonUtil.save("clients.json", dataModel);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             return;
         }
 
         if ("add".equals(action)) {
             dataModel.addRandomClient();
             redirect303(exchange, "/day");
+            try {
+                JsonUtil.save("clients.json", dataModel);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             return;
         }
 
@@ -149,11 +170,9 @@ public class ServerLogic extends BasicServer {
         renderTemplate(exchange, "list.html", map);
     }
 
-
     private void calendarHandler(HttpExchange exchange) {
         Map<String, Object> map = new HashMap<>();
         Map<String, String> query = Utils.parseUrlEncoded(getQueryParams(exchange), "&");
-
 
         String yearParam = query.get("year");
         String monthParam = query.get("month");
@@ -171,28 +190,10 @@ public class ServerLogic extends BasicServer {
 
         List<LocalDate> days = makeCalendar(year, month);
 
-        int prevMonth = month - 1;
-        int prevYear = year;
-        if (prevMonth == 0) {
-            prevMonth = 12;
-            prevYear = year - 1;
-        }
-
-        int nextMonth = month + 1;
-        int nextYear = year;
-        if (nextMonth == 13) {
-            nextMonth = 1;
-            nextYear = year + 1;
-        }
-
         map.put("year", year);
         map.put("month", month);
         map.put("days", days);
         map.put("today", LocalDate.now());
-        map.put("prevMonth", prevMonth);
-        map.put("prevYear", prevYear);
-        map.put("nextMonth", nextMonth);
-        map.put("nextYear", nextYear);
 
         renderTemplate(exchange, "index.html", map);
     }
@@ -212,18 +213,6 @@ public class ServerLogic extends BasicServer {
     private Map<String, String> parsePostBody(HttpExchange exchange) {
         String raw = getRequestBody(exchange);
         return Utils.parseUrlEncoded(raw, "&");
-    }
-
-    private int getIdFromQuery(HttpExchange exchange) {
-        String s = getQueryParams(exchange);
-
-        if (s == null) {
-            respond404(exchange);
-        }
-
-        var map = Utils.parseUrlEncoded(s, "&");
-        String idParam = map.get("id");
-        return Integer.parseInt(idParam);
     }
 
     protected void redirect303(HttpExchange exchange, String path) {

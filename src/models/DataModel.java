@@ -2,8 +2,11 @@ package models;
 
 import entities.Client;
 import utility.Generator;
+import utility.JsonUtil;
 import utility.MyGenerator;
 
+import javax.xml.crypto.Data;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -11,8 +14,24 @@ import java.util.Random;
 
 public class DataModel {
 
-    private transient Client client;
     private List<Client> clients = new ArrayList<>();
+
+    public DataModel() {
+        loadData();
+    }
+
+    public void loadData() {
+        if (clients.isEmpty()) {
+            try {
+                DataModel data = JsonUtil.load("data.json");
+                if (data != null) {
+                    clients = data.getClients();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     public void generateClients() {
         if (clients.isEmpty()) {

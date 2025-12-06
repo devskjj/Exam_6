@@ -3,7 +3,6 @@ package server;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import models.DataModel;
-import server.cookies.Cookie;
 import server.enums.ContentType;
 import server.enums.ResponseCodes;
 import server.interfaces.RouteHandler;
@@ -18,7 +17,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -148,10 +146,6 @@ public abstract class BasicServer {
         route.handle(exchange);
     }
 
-    protected String getContentType(HttpExchange exchange) {
-        return exchange.getRequestHeaders().getOrDefault("Content-Type", List.of("")).get(0);
-    }
-
     protected String getRequestBody(HttpExchange exchange) {
         InputStream is = exchange.getRequestBody();
         Charset charset = StandardCharsets.UTF_8;
@@ -163,15 +157,6 @@ public abstract class BasicServer {
             e.printStackTrace();
         }
         return "";
-    }
-
-    protected static void setCookie(HttpExchange exchange, Cookie cookie) {
-        exchange.getResponseHeaders().add("Set-Cookie", cookie.toString());
-
-    }
-
-    protected static String getCookie(HttpExchange exchange) {
-        return exchange.getRequestHeaders().getOrDefault("Cookie", List.of("")).get(0);
     }
 
     protected String getQueryParams(HttpExchange exchange) {
