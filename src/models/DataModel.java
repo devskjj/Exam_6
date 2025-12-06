@@ -67,7 +67,9 @@ public class DataModel {
         }
     }
 
-
+    public boolean isBooked(int time) {
+        return clients.stream().anyMatch(c -> c.getTime() == time);
+    }
 
     public List<Client> getClients() {
         return clients;

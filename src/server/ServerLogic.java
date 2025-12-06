@@ -1,6 +1,7 @@
 package server;
 
 import com.sun.net.httpserver.HttpExchange;
+import entities.Client;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -15,10 +16,7 @@ import utility.Utils;
 import java.io.*;
 import java.nio.file.Path;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ServerLogic extends BasicServer {
     private final static Configuration freemarker = initFreeMarker();
@@ -29,7 +27,56 @@ public class ServerLogic extends BasicServer {
         registerGet("/calendar", this::calendarHandler);
 
         registerGet("/day", this::dayHandler);
+        registerGet("/new", this::newHandler);
+        registerPost("/new", this::newPostHandler);
     }
+
+    private void newPostHandler(HttpExchange exchange) {
+        var formData = parsePostBody(exchange);
+
+        String firstName = formData.get("firstName");
+        String lastName = formData.get("lastName");
+        String surName = formData.get("surName");
+        String clientType = formData.get("clientType");
+        String symptoms = formData.get("symptoms");
+        int time = Integer.parseInt(formData.get("time"));
+        String birthDate = formData.get("birthDate");
+
+        LocalDate date = LocalDate.parse(formData.get("date"));
+
+        if (date.isBefore(LocalDate.now())) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("error", "Дата приема не может быть в прошлом!");
+            renderTemplate(exchange, "new.html", map);
+            return;
+        }
+
+        if (dataModel.isBooked(time)) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("error", "Время " + time + " занято, выберите другое");
+            renderTemplate(exchange, "new.html", map);
+            return;
+        }
+
+        dataModel.getClients().add(new Client(
+                firstName,
+                lastName,
+                surName,
+                birthDate,
+                clientType,
+                symptoms,
+                time
+        ));
+
+        dataModel.getClients().sort(Comparator.comparingInt(Client::getTime));
+        redirect303(exchange, "/new");
+    }
+
+    private void newHandler(HttpExchange exchange) {
+        Path path = makeFilePath("new.html");
+        renderTemplate(exchange, "new.html", path);
+    }
+
 
     private void dayHandler(HttpExchange exchange) {
         Map<String, Object> map = new HashMap<>();
